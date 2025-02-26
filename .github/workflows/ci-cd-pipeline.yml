@@ -1,0 +1,78 @@
+name: Flask CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - staging
+  pull_request:
+    branches:
+      - main
+      - staging
+  release:
+    types: [published]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          source venv/bin/activate
+          pytest
+
+  deploy-staging:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'
+    steps:
+      - name: Deploy to Staging
+        env:
+          STAGING_SERVER: ${{ secrets.STAGING_SERVER }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          echo "$SSH_KEY" > deploy_key
+          chmod 600 deploy_key
+          ssh -i deploy_key -o StrictHostKeyChecking=no $SSH_USER@$STAGING_SERVER << 'EOF'
+            cd /home/Python/
+            git pull origin staging
+            source venv/bin/activate
+            pip install -r requirements.txt
+            systemctl restart flask-staging
+          EOF
+
+  deploy-production:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    steps:
+      - name: Deploy to Production
+        env:
+          PROD_SERVER: ${{ secrets.PROD_SERVER }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+        run: |
+          echo "$SSH_KEY" > deploy_key
+          chmod 600 deploy_key
+          ssh -i deploy_key -o StrictHostKeyChecking=no $SSH_USER@$PROD_SERVER << 'EOF'
+            cd /home/Python/
+            git pull origin main
+            source venv/bin/activate
+            pip install -r requirements.txt
+            systemctl restart flask-production
+          EOF
