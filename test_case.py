@@ -10,4 +10,4 @@ def test_home():
 
     # Assert the response data and status code
     assert response.status_code == 200
-    assert b'Hello, Jenkins CI/CD Pipeline with Flask Application!' in response.data
+    assert b'Hello, Git-Hub Actions Pipeline with Flask Application!' in response.data
