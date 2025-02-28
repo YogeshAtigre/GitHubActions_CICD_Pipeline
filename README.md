@@ -9,7 +9,7 @@ This guide walks you through setting up a **CI/CD pipeline** for a **Flask appli
 - If you don’t have a repository yet, create one on GitHub.
 - Clone it locally:
   ```bash
-  git clone https://github.com/YogeshAtigre/Python.git
+  git clone https://github.com/YogeshAtigre/GitHubActions_CICD_Pipeline.git
   cd flask-app
   ```
 
@@ -22,7 +22,7 @@ This guide walks you through setting up a **CI/CD pipeline** for a **Flask appli
   ```
 
 **Example Flask Application Repository:**  
-[Sample Flask App](https://github.com/YogeshAtigre/Python/main) (You can fork this or create a new one)
+[Sample Flask App](https://github.com/YogeshAtigre/GitHubActions_CICD_Pipeline) (You can fork this or create a new one)
 
 ---
 
@@ -54,7 +54,7 @@ To store sensitive information, go to **GitHub Repository → Settings → Secre
 ## Setup Instructions
 1. Clone the repo:
    ```bash
-   git clone https://github.com/your-username/flask-app.git
+   git clone https://github.com/your-username/<reponame>.git
    cd flask-app
    ```
 2. Install dependencies:
